@@ -1,0 +1,10 @@
+Trial,ToneType,RewardGiven,Timestamp,Elapsed_ms,LickCount
+1,Tone2_high,None,2025-07-24 15:33:02,2596,0
+2,Tone1_low,Reward,2025-07-24 15:33:09,9193,106
+3,Tone1_low,Reward,2025-07-24 15:33:14,14868,0
+4,Tone2_high,None,2025-07-24 15:33:19,20066,0
+5,Tone1_low,Reward,2025-07-24 15:33:25,25977,0
+
+SUMMARY
+Reward Avg Lick,No-Reward Avg Lick,Reward/No-reward Ratio
+35.33,0.00,inf
