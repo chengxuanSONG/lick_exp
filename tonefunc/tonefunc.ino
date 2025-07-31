@@ -6,11 +6,11 @@
 #define TRIAL_ON 8             // TTL output for trial start
 
 // === Timing Parameters (ms) ===
-#define PUMP_DURATION 100      // Reward pump duration
+#define PUMP_DURATION 75      // Reward pump duration
 #define TONE_DURATION 1000     // Tone playback duration
 #define POST_TONE_DELAY 1000   // Delay after tone ends
 #define MAX_SAME_TONE 5        // Max consecutive same-tone trials
-#define LICK_DEBOUNCE 10       // Lick debounce time
+#define LICK_DEBOUNCE 20      // Lick debounce time
 
 
 // === TTL Pulse Durations (ms)

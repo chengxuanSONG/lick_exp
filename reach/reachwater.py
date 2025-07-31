@@ -5,17 +5,17 @@ import csv
 from datetime import datetime
 
 # === CONFIGURATION ===
-SERIAL_PORT = 'COM3'
+SERIAL_PORT = 'COM5'
 BAUD_RATE = 115200
-PRE_TONE_SILENCE = 1.5
-TONE_DURATION = 0.5
+PRE_TONE_SILENCE = 1
+TONE_DURATION = 0.2
 RESPONSE_WINDOW = 7.0
-FLEX_POST_LICK = 2.0
+FLEX_POST_LICK = 1
 TRIAL_INTERVAL_RANGE = (1.0, 3.0)
 
 # === LOG FILE SETUP ===
 timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-LOG_PATH = f"lick_log_{timestamp_str}.csv"
+LOG_PATH = f"Data/m10/lick_log_{timestamp_str}.csv"
 
 def wait_for_silence(ser, duration):
     #print(f"[FLEX] Waiting for {duration}s silence...")
@@ -24,7 +24,7 @@ def wait_for_silence(ser, duration):
         if ser.in_waiting:
             line = ser.readline().decode().strip()
             if "Lick" in line:
-                print("[FLEX] Lick → reset timer")
+                
                 silent_start = time.time()
         if time.time() - silent_start > duration:
             #print("[FLEX] Silence complete")

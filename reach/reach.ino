@@ -5,9 +5,9 @@
 #define TRIAL_ON 8
 
 #define TONE_FREQ 6000
-#define TONE_DURATION 500
-#define PUMP_DURATION 50
-#define LICK_DEBOUNCE 100
+#define TONE_DURATION 200
+#define PUMP_DURATION 75
+#define LICK_DEBOUNCE 20
 
 void setup() {
   pinMode(PUMP_ENABLE, OUTPUT);

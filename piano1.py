@@ -4,7 +4,7 @@ import csv
 from datetime import datetime
 
 # ========== CONFIG ==========
-SERIAL_PORT = 'COM3'
+SERIAL_PORT = 'COM5'
 BAUD_RATE = 115200
 MAX_RUNTIME_MIN = 30            # Max runtime in minutes
 MAX_REWARD_COUNT = 300          # Max number of rewards to give
@@ -12,7 +12,7 @@ TRIAL_TIMEOUT = 10.0            # Max time to wait for Arduino response
 
 # Log file with timestamp
 timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-LOG_PATH = f"tone_trial_log_{timestamp_str}.csv"
+LOG_PATH = f"Data/m71/tone_trial_log_{timestamp_str}.csv"
 # ============================
 
 def open_serial(port, baudrate):
@@ -39,7 +39,7 @@ def wait_for_arduino_response(ser, timeout_sec=TRIAL_TIMEOUT):
             line = ser.readline().decode(errors='ignore').strip()
 
             # Record up to 2 lick events
-            if line.startswith("Lick") and len(lick_events) < 2:
+            if line.startswith("Lick"):
                 lick_events.append(line)
                 print(f"[👅] {line}")
 
