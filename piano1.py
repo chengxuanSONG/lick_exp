@@ -2,48 +2,68 @@ import serial
 import time
 import csv
 from datetime import datetime
+import threading
 
 # ========== CONFIG ==========
 SERIAL_PORT = 'COM5'
 BAUD_RATE = 115200
-MAX_RUNTIME_MIN = 30            # Max runtime in minutes
-MAX_REWARD_COUNT = 300          # Max number of rewards to give
-TRIAL_TIMEOUT = 10.0            # Max time to wait for Arduino response
-
-# Log file with timestamp
+MAX_RUNTIME_MIN = 30
+MAX_REWARD_COUNT = 300
+TRIAL_TIMEOUT = 10.0
 timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
 LOG_PATH = f"Data/m71/tone_trial_log_{timestamp_str}.csv"
 # ============================
 
+trial_active = False  # global flag to mark trial status
+ser = None            # serial object reference
+lock = threading.Lock()  # to avoid race condition
+shared_lines = []     # shared buffer between threads
+
 def open_serial(port, baudrate):
     try:
-        ser = serial.Serial(port, baudrate, timeout=1)
+        s = serial.Serial(port, baudrate, timeout=1)
         time.sleep(2)
         print(f"[✓] Serial connected on {port}")
-        return ser
+        return s
     except serial.SerialException as e:
         print(f"[✗] Failed to open serial port: {e}")
         exit(1)
 
-def send_trial(ser):
-    ser.write(b'1')  # Send start trial command
-
-def wait_for_arduino_response(ser, timeout_sec=TRIAL_TIMEOUT):
-    ser.flushInput()
-    t_start = time.time()
-    lick_events = []
-    result_line = None
-
+def serial_monitor():
+    global shared_lines
     while True:
         if ser.in_waiting:
             line = ser.readline().decode(errors='ignore').strip()
-
-            # Record up to 2 lick events
             if line.startswith("Lick"):
-                lick_events.append(line)
-                print(f"[👅] {line}")
+                with lock:
+                    if trial_active:
+                        shared_lines.append(line)
+                    else:
+                        try:
+                            ts = line.split(",")[1]
+                        except:
+                            ts = "UNKNOWN"
+                        print(f"[⚠️] Out-window Lick at {ts}")
 
-            # Final result of trial
+def send_trial(ser):
+    ser.write(b'1')
+
+def wait_for_arduino_response(timeout_sec=TRIAL_TIMEOUT):
+    global trial_active, shared_lines
+    with lock:
+        shared_lines = []  # clear buffer before trial
+    trial_active = True
+    t_start = time.time()
+    result_line = None
+
+    while True:
+        with lock:
+            while shared_lines:
+                lick_line = shared_lines.pop(0)
+                print(f"[👅] {lick_line}")
+
+        if ser.in_waiting:
+            line = ser.readline().decode(errors='ignore').strip()
             if line.startswith("Tone"):
                 result_line = line
                 break
@@ -52,8 +72,8 @@ def wait_for_arduino_response(ser, timeout_sec=TRIAL_TIMEOUT):
             result_line = "TIMEOUT,None,LickCount:0"
             break
 
+    trial_active = False
     return result_line
-
 
 def log_trial(csv_writer, trial_num, result_string, elapsed_ms, reward_count):
     try:
@@ -66,7 +86,6 @@ def log_trial(csv_writer, trial_num, result_string, elapsed_ms, reward_count):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     csv_writer.writerow([trial_num, tone_type, reward_status, timestamp, elapsed_ms, lick_count])
 
-    # Show formatted trial output
     elapsed_min = int(elapsed_ms // 60000)
     elapsed_sec = int((elapsed_ms % 60000) // 1000)
     reward_note = f" | Reward #{reward_count}" if reward_status == "Reward" else ""
@@ -75,9 +94,11 @@ def log_trial(csv_writer, trial_num, result_string, elapsed_ms, reward_count):
     return tone_type, reward_status, lick_count
 
 def main():
+    global ser
     ser = open_serial(SERIAL_PORT, BAUD_RATE)
-    experiment_start = time.time()
+    threading.Thread(target=serial_monitor, daemon=True).start()
 
+    experiment_start = time.time()
     reward_licks = []
     no_reward_licks = []
     reward_count = 0
@@ -99,7 +120,7 @@ def main():
 
                 print(f"\n--- Trial {trial_num} ---")
                 send_trial(ser)
-                response = wait_for_arduino_response(ser)
+                response = wait_for_arduino_response()
                 elapsed_ms = int((time.time() - experiment_start) * 1000)
 
                 tone_type, reward_status, lick_count = log_trial(writer, trial_num, response, elapsed_ms, reward_count + 1)
@@ -116,10 +137,7 @@ def main():
         except KeyboardInterrupt:
             print("\n[!] Experiment manually interrupted.")
 
-        # === Summary Statistics ===
-        def average(lst):
-            return sum(lst) / len(lst) if lst else 0
-
+        def average(lst): return sum(lst) / len(lst) if lst else 0
         avg_reward = average(reward_licks)
         avg_noreward = average(no_reward_licks)
         ratio = avg_reward / avg_noreward if avg_noreward != 0 else float('inf')
