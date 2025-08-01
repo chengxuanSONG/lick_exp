@@ -1,0 +1,8 @@
+Trial,ToneType,RewardGiven,Timestamp,Elapsed_ms,LickCount
+1,TIMEOUT,None,2025-08-01 14:35:47,10006,0
+2,TIMEOUT,None,2025-08-01 14:35:58,20519,0
+3,TIMEOUT,None,2025-08-01 14:36:08,31030,0
+
+SUMMARY
+Reward Avg Lick,No-Reward Avg Lick,Reward/No-reward Ratio
+0.00,0.00,inf
