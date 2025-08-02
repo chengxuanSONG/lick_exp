@@ -24,6 +24,7 @@ lick_log = []
 trial_active = False
 lick_count_in_trial = 0
 last_lick_time = 0
+trial_num = 1  # ✅ global trial number
 lock = threading.Lock()
 
 def open_serial(port, baudrate):
@@ -40,7 +41,7 @@ def send_trial(ser):
     ser.write(b'1')
 
 def lick_listener(ser):
-    global trial_active, lick_count_in_trial, last_lick_time
+    global trial_active, lick_count_in_trial, last_lick_time, trial_num
     buffer = b""
     while True:
         try:
@@ -52,8 +53,8 @@ def lick_listener(ser):
                     for line in lines[:-1]:
                         decoded = line.decode(errors='ignore').strip()
                         now = time.time()
+
                         if decoded.startswith("Lick"):
-                            # ✅ debounce check
                             if now - last_lick_time > LICK_DEBOUNCE_MS / 1000.0:
                                 last_lick_time = now
                                 ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
@@ -62,8 +63,16 @@ def lick_listener(ser):
                                 with lock:
                                     if trial_active:
                                         lick_count_in_trial += 1
+
                         elif decoded.startswith("Tone"):
                             trial_result_queue.put(decoded)
+
+                        elif decoded.startswith("TRIAL_START"):  # ✅ Tone 开始瞬间
+                            with lock:
+                                lick_count_in_trial = 0
+                                trial_active = True
+                            print(f"\n-- Trial {trial_num} --")
+
                     buffer = lines[-1]
             time.sleep(0.001)
         except Exception as e:
@@ -94,14 +103,13 @@ def save_lick_log():
     print(f"[💾] All licks saved to {LICK_LOG_PATH}")
 
 def main():
-    global trial_active, lick_count_in_trial
+    global trial_active, lick_count_in_trial, trial_num
 
     ser = open_serial(SERIAL_PORT, BAUD_RATE)
     threading.Thread(target=lick_listener, args=(ser,), daemon=True).start()
 
     experiment_start = time.time()
     reward_count = 0
-    trial_num = 1
     reward_licks = []
     no_reward_licks = []
 
@@ -119,13 +127,9 @@ def main():
                     print("[🎯] Max reward count reached.")
                     break
 
-                print(f"\n--- Trial {trial_num} ---")
                 send_trial(ser)
 
-                with lock:
-                    trial_active = True
-                    lick_count_in_trial = 0
-
+            
                 try:
                     result = trial_result_queue.get(timeout=TRIAL_TIMEOUT)
                 except queue.Empty:
