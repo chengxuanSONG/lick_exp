@@ -7,13 +7,13 @@
 #define TTL_IN 2
 
 // === Timing Parameters (ms)
-#define PUMP_DURATION 300
-#define TONE_DURATION 1500
+#define PUMP_DURATION 150
+#define TONE_DURATION 1000
 #define POST_TONE_DELAY 1000
 #define MAX_SAME_TONE 5
-#define LICK_DEBOUNCE 10
+#define LICK_DEBOUNCE 50
 // === Post-Trial Delay (ms) ===
-#define POST_TRIAL_DELAY_MIN 1000  // min inter-trial for Random
+#define POST_TRIAL_DELAY_MIN 2000  // min inter-trial for Random
 #define POST_TRIAL_DELAY_MAX 4000  // max inter-trial for Random
 
 

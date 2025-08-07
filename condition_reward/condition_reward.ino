@@ -6,7 +6,7 @@
 #define TRIAL_ON 8
 
 // === Timing Parameters (ms) ===
-#define PUMP_DURATION 75
+#define PUMP_DURATION 100
 #define TONE_DURATION 1000
 #define POST_TONE_DELAY 1000
 #define FIXED_POST_PUMP_DELAY 2000
@@ -123,7 +123,7 @@ void run_trial(int trial_num) {
 
   // === Post-trial period (not counted)
   count_licks = false;
-  delayWithLickCheck(random(4000, 6001));
+  delayWithLickCheck(random(2000, 4001));
 }
 
 void give_reward() {

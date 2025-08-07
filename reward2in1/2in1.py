@@ -6,16 +6,16 @@ import queue
 from datetime import datetime
 
 # ==== CONFIG ====
-SERIAL_PORT = 'COM3'
+SERIAL_PORT = 'COM5'
 BAUD_RATE = 115200
-MAX_RUNTIME_MIN = 30
+MAX_RUNTIME_MIN = 25
 MAX_REWARD_COUNT = 300
 TRIAL_TIMEOUT = 10.0
 
 # ==== LOG FILES ====
 timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-TRIAL_LOG_PATH = f"data/trial_log_{timestamp_str}.csv"
-LICK_LOG_PATH = f"data/lick_log_{timestamp_str}.csv"
+TRIAL_LOG_PATH = f"Data/m77/trial_log_{timestamp_str}.csv"
+LICK_LOG_PATH = f"Data/m77/lick_log_{timestamp_str}.csv"
 
 # ==== GLOBAL STATE ====
 trial_result_queue = queue.Queue()
@@ -203,7 +203,8 @@ def main():
     print("\n=== Summary ===")
     print(f"Avg reward licks: {avg(reward_licks):.2f}")
     print(f"Avg no-reward licks: {avg(no_reward_licks):.2f}")
-    print(f"Ratio: {avg(reward_licks) / avg(no_reward_licks) if no_reward_licks else float('inf'):.2f}")
+    avg_no = avg(no_reward_licks)
+    print(f"Ratio: {avg(reward_licks) / avg(no_reward_licks) if not avg_no == 0 else float('inf'):.2f}")
 
     save_lick_log()
     ser.close()

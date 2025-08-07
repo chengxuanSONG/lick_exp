@@ -6,7 +6,7 @@ import queue
 from datetime import datetime
 
 # ==== CONFIG ====
-SERIAL_PORT = 'COM3'
+SERIAL_PORT = 'COM5'
 BAUD_RATE = 115200
 MAX_RUNTIME_MIN = 30
 MAX_REWARD_COUNT = 300
@@ -15,8 +15,8 @@ LICK_DEBOUNCE_MS = 10
 
 # ==== LOG FILES ====
 timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-TRIAL_LOG_PATH = f"data/trial_log_{timestamp_str}.csv"
-LICK_LOG_PATH = f"data/lick_log_{timestamp_str}.csv"
+TRIAL_LOG_PATH = f"Data/m77/trial_log_{timestamp_str}.csv"
+LICK_LOG_PATH = f"Data/m77/lick_log_{timestamp_str}.csv"
 
 # ==== GLOBAL STATE ====
 trial_result_queue = queue.Queue()
