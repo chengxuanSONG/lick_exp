@@ -205,10 +205,17 @@ def main():
     print(f"Avg no-reward licks: {avg(no_reward_licks):.2f}")
     avg_no = avg(no_reward_licks)
     print(f"Ratio: {avg(reward_licks) / avg(no_reward_licks) if not avg_no == 0 else float('inf'):.2f}")
-
+    #ratio = avg(reward_licks) / avg(no_reward_licks) if not avg_no == 0 else 'inf'
     save_lick_log()
     ser.close()
     print(f"[✔] Trial data saved to {TRIAL_LOG_PATH}")
+    with open(TRIAL_LOG_PATH, 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([])
+        writer.writerow(["Avg Reward licks", f"{avg(reward_licks):.2f}"])
+        writer.writerow(["Avg NO-Reward licks", f"{avg(no_reward_licks):.2f}"])
+        #writer.writerow(["ratio", f"{ratio:.2f}" ])
+        
 
 if __name__ == "__main__":
     main()

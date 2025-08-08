@@ -6,7 +6,7 @@
 
 #define TONE_FREQ 6000
 #define TONE_DURATION 200
-#define PUMP_DURATION 75
+#define PUMP_DURATION 125
 #define LICK_DEBOUNCE 20
 
 void setup() {
