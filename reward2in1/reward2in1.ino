@@ -12,6 +12,11 @@
 #define POST_TONE_DELAY 1000
 #define MAX_SAME_TONE 5
 #define LICK_DEBOUNCE 0.025
+
+// === Reward Probabilities (%)
+#define REWARD_PROB_PCT     95   // Tone1_low: probability to deliver water
+#define NONREWARD_PROB_PCT  20   // Tone2_high: probability to deliver water
+
 // === Post-Trial Delay (ms) ===
 #define POST_TRIAL_DELAY_MIN 5000  // min inter-trial for Random
 #define POST_TRIAL_DELAY_MAX 8000  // max inter-trial for Random
@@ -115,10 +120,25 @@ void run_trial() {
   noTone(AUDIO_PIN);
 
   if (rand_choice == 0) {
-    give_reward();
-    Serial.print("Tone1_low,Reward,LickCount:");
+    // === Tone1_low: reward-eligible ===
+    bool deliver = (random(100) < REWARD_PROB_PCT);  // 95% yes, 5% no
+    if (deliver) {
+      give_reward();
+      Serial.print("Tone1_low,Reward,LickCount:");
+    } else {
+      delay(PUMP_DURATION);                          // fake wait for timing symmetry
+      Serial.print("Tone1_low,None,LickCount:");
+    }
   } else {
-    Serial.print("Tone2_high,None,LickCount:");
+    // === Tone2_high: normally non-reward ===
+    bool deliver = (random(100) < NONREWARD_PROB_PCT);  // 20% yes, 80% no
+    if (deliver) {
+      give_reward();
+      Serial.print("Tone2_high,Reward,LickCount:");
+    } else {
+      delay(PUMP_DURATION);                            // fake wait to keep duration matched
+      Serial.print("Tone2_high,None,LickCount:");
+    }
   }
   Serial.println(lick_count_this_trial);
 
