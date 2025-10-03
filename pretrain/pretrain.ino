@@ -7,8 +7,8 @@
 #define TTL_IN 2  // not used here
 
 // === Timing Parameters (ms) ===
-#define PUMP_DURATION 100
-#define LICK_DEBOUNCE 10
+#define PUMP_DURATION 150
+#define LICK_DEBOUNCE 20
 
 // === State Variables ===
 bool last_lick_state = LOW;

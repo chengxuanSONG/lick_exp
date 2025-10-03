@@ -5,17 +5,17 @@ import threading
 from datetime import datetime
 
 # === CONFIG ===
-SERIAL_PORT = 'COM3'
+SERIAL_PORT = 'COM5'
 BAUD_RATE = 115200
 CALM_DOWN_MS = 1500
-MAX_RUNTIME_MIN = 30
-MAX_PUMP_COUNT = 100
-NO_LICK_TIMEOUT = 15  # seconds
+MAX_RUNTIME_MIN = 10
+MAX_PUMP_COUNT = 300
+NO_LICK_TIMEOUT = 60  # seconds
 
 # === Timestamp and file paths ===
 timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-LICK_PATH = f"lick_log_{timestamp_str}.csv"
-PUMP_PATH = f"pump_log_{timestamp_str}.csv"
+LICK_PATH = f"Data/m75/m75_train_pretrain_lick_log_{timestamp_str}.csv"
+PUMP_PATH = f"Data/m75/m75_train_pretrain_pump_log_{timestamp_str}.csv"
 
 # === Serial setup ===
 ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)

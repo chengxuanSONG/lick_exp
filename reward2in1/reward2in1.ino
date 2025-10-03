@@ -11,10 +11,10 @@
 #define TONE_DURATION 1000
 #define POST_TONE_DELAY 1000
 #define MAX_SAME_TONE 5
-#define LICK_DEBOUNCE 50
+#define LICK_DEBOUNCE 0.025
 // === Post-Trial Delay (ms) ===
-#define POST_TRIAL_DELAY_MIN 2000  // min inter-trial for Random
-#define POST_TRIAL_DELAY_MAX 4000  // max inter-trial for Random
+#define POST_TRIAL_DELAY_MIN 5000  // min inter-trial for Random
+#define POST_TRIAL_DELAY_MAX 8000  // max inter-trial for Random
 
 
 // === TTL Pulse Durations (ms)
